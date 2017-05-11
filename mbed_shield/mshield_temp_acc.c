@@ -6,7 +6,14 @@ nrf_drv_twi_t twi = NRF_DRV_TWI_INSTANCE(MBEDSHIELD_TWI_INDEX);
 
 uint32_t mshield_temp_acc_init(void)
 {
-    uint32_t err_code = nrf_drv_twi_init(&twi, NULL, NULL, NULL);
+    nrf_drv_twi_config_t twi_config;
+    twi_config.scl = MBEDSHIELD_PIN_SCL;
+    twi_config.sda = MBEDSHIELD_PIN_SDA;
+    twi_config.frequency = NRF_TWI_FREQ_100K;
+    twi_config.interrupt_priority = 3;
+    twi_config.clear_bus_init = false;     
+    twi_config.hold_bus_uninit = false;  
+    uint32_t err_code = nrf_drv_twi_init(&twi, &twi_config, NULL, NULL);
     if(err_code != NRF_SUCCESS)
     {
         return err_code;
@@ -27,7 +34,7 @@ int32_t mshield_temp_read(void)
     nrf_drv_twi_rx(&twi, MBEDSHIELD_LM75_TWI_ADDR, buf, 2);
     
     result = buf[0]; // set MSB
-    result <<=8;
+    result <<= 8;
     result |= buf[1]; // set LSB
     if(result & 0x8000) result = (result >> 5) | 0xFFFFF800;
     else result >>= 5;

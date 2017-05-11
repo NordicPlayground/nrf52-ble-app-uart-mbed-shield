@@ -65,6 +65,7 @@
 #include "app_util_platform.h"
 #include "bsp.h"
 #include "bsp_btn_ble.h"
+#include "mshield.h"
 
 #define NRF_LOG_MODULE_NAME "APP"
 #include "nrf_log.h"
@@ -100,6 +101,7 @@ static nrf_ble_gatt_t                   m_gatt;                                 
 static ble_uuid_t                       m_adv_uuids[] = {{BLE_UUID_NUS_SERVICE, NUS_SERVICE_UUID_TYPE}};  /**< Universally unique service identifier. */
 static uint16_t                         m_ble_nus_max_data_len = BLE_GATT_ATT_MTU_DEFAULT - 3;  /**< Maximum length of data (in bytes) that can be transmitted to the peer by the Nordic UART service module. */
 
+APP_TIMER_DEF(m_mbed_shield_timer_id);
 
 /**@brief Function for assert macro callback.
  *
@@ -182,6 +184,9 @@ static void nus_data_handler(ble_nus_t * p_nus, uint8_t * p_data, uint16_t lengt
         while (app_uart_put('\n') == NRF_ERROR_BUSY);
     }
 
+    p_data[length] = 0;
+    mshield_lcd_clear(MBEDSHIELD_LCD_LINE_4);
+    mshield_lcd_print((char*)p_data, 0, MBEDSHIELD_LCD_LINE_4);   
 }
 /**@snippet [Handling the data received over BLE] */
 
@@ -660,7 +665,7 @@ static void buttons_leds_init(bool * p_erase_bonds)
 {
     bsp_event_t startup_event;
 
-    uint32_t err_code = bsp_init(BSP_INIT_LED | BSP_INIT_BUTTONS, bsp_event_handler);
+    uint32_t err_code = bsp_init(0/*BSP_INIT_LED | BSP_INIT_BUTTONS*/, bsp_event_handler);
     APP_ERROR_CHECK(err_code);
 
     err_code = bsp_btn_ble_init(NULL, &startup_event);
@@ -676,6 +681,52 @@ static void log_init(void)
 {
     ret_code_t err_code = NRF_LOG_INIT(NULL);
     APP_ERROR_CHECK(err_code);
+}
+
+
+static void mbed_shield_timer_callback(void *p_context)
+{     
+    static float pot1, pot2, temp;
+    char string[64];
+    int8_t acc_data[3];
+    pot1 = mshield_pot_read_f(MBEDSHIELD_POT_LEFT);
+    pot2 = mshield_pot_read_f(MBEDSHIELD_POT_RIGHT);
+    temp = mshield_temp_read_f();
+    mshield_acc_read_all(acc_data);
+    switch((uint32_t)(pot2 * 6.0f))
+    {
+        case 0:
+            sprintf(string, "Temp: %.1fC", temp);
+            break;
+        case 1:
+            sprintf(string, "Acc X:%i", (int)acc_data[MBEDSHIELD_AXIS_X]);
+            break;
+        case 2:
+            sprintf(string, "Acc Y:%i", (int)acc_data[MBEDSHIELD_AXIS_Y]);
+            break;
+        case 3:
+            sprintf(string, "Acc Z:%i", (int)acc_data[MBEDSHIELD_AXIS_Z]);
+            break;
+        case 4:
+            sprintf(string, "Pot left:%.1f", pot1);
+            break;
+        case 5:
+            sprintf(string, "Set LED color");
+            mshield_led_set_color_hsv(pot1, 1.0f, 1.0f);
+            break;
+        default:
+            sprintf(string, "ERROR");
+            break;
+
+    }
+    mshield_lcd_clear(MBEDSHIELD_LCD_LINE_3);
+    mshield_lcd_print(string, 0, MBEDSHIELD_LCD_LINE_3);
+}
+
+static void mbed_shield_timer_init()
+{
+    app_timer_create(&m_mbed_shield_timer_id, APP_TIMER_MODE_REPEATED, mbed_shield_timer_callback);
+    app_timer_start(m_mbed_shield_timer_id, APP_TIMER_TICKS(50), 0);
 }
 
 
@@ -709,6 +760,16 @@ int main(void)
     services_init();
     advertising_init();
     conn_params_init();
+    
+    mshield_init();
+    
+    mbed_shield_timer_init();
+    
+    mshield_lcd_clear(MBEDSHIELD_LCD_LINE_ALL);
+    mshield_lcd_print("mBed Shield demo", 0, 0);
+    mshield_lcd_print("Advertising", 0, 1);
+    
+    mshield_led_set_color(MBEDSHIELD_COLOR_RED);
 
     printf("\r\nUART Start!\r\n");
     NRF_LOG_INFO("UART Start!\r\n");

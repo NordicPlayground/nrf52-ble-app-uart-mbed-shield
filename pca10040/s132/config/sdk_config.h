@@ -1917,7 +1917,7 @@
 // <e> SAADC_CONFIG_LOG_ENABLED - Enables logging in the module.
 //==========================================================
 #ifndef SAADC_CONFIG_LOG_ENABLED
-#define SAADC_CONFIG_LOG_ENABLED 0
+#define SAADC_CONFIG_LOG_ENABLED 1
 #endif
 #if  SAADC_CONFIG_LOG_ENABLED
 // <o> SAADC_CONFIG_LOG_LEVEL  - Default Severity level

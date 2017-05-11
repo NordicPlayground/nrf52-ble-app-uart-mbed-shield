@@ -70,12 +70,13 @@ uint32_t lcd_configure(void)
     nrf_gpio_pin_set(LCD_PIN_RESET);
    
     nrf_drv_spi_config_t config = NRF_DRV_SPI_DEFAULT_CONFIG;
-    config.frequency = NRF_DRV_SPI_FREQ_4M;
+    config.frequency = NRF_DRV_SPI_FREQ_1M;
     config.mode      = NRF_DRV_SPI_MODE_0;
     config.bit_order = NRF_DRV_SPI_BIT_ORDER_MSB_FIRST;
     config.mosi_pin  = MBEDSHIELD_PIN_MOSI;
     config.sck_pin   = MBEDSHIELD_PIN_SCK;
     config.ss_pin    = MBEDSHIELD_PIN_CSN;
+    config.miso_pin  = MBEDSHIELD_PIN_MISO;
     err_code = nrf_drv_spi_init(&m_spi_master_0, &config, NULL, NULL);
     if (err_code != NRF_SUCCESS)
     {
