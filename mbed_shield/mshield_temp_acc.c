@@ -19,6 +19,11 @@ uint32_t mshield_temp_acc_init(void)
         return err_code;
     }
     nrf_drv_twi_enable(&twi);
+    
+#if(MBEDSHIELD_ENABLE_ACC == 1)
+    mshield_acc_init();
+#endif
+    
     return 0;
 }
 #endif
