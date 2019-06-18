@@ -25,6 +25,7 @@
       gcc_entry_point="Reset_Handler"
       linker_output_format="hex"
       linker_printf_fmt_level="long"
+      linker_printf_fp_enabled="Float"
       linker_printf_width_precision_supported="Yes"
       linker_scanf_fmt_level="long"
       linker_section_placement_file="flash_placement.xml"
