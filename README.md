@@ -3,7 +3,7 @@ nrf52-ble-app-uart-mbed-shield
 
 Example project showing how to use the [mBed application shield](https://os.mbed.com/components/mbed-Application-Shield/) with the nRF5 SDK on an nRF52 or nRF52840DK. 
 
-Requires nRF5 SDK v13.1.0
+Requires nRF5 SDK v15.3.0
 
 About this project
 ------------------
