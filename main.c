@@ -197,10 +197,11 @@ static void nrf_qwr_error_handler(uint32_t nrf_error)
 /**@snippet [Handling the data received over BLE] */
 static void nus_data_handler(ble_nus_evt_t * p_evt)
 {
-
     if (p_evt->type == BLE_NUS_EVT_RX_DATA)
     {
-        uint32_t err_code;
+        static uint32_t err_code;
+        static char data_buf[65];
+        uint16_t length = (p_evt->params.rx_data.length <= 64) ? p_evt->params.rx_data.length : 64;
 
         NRF_LOG_DEBUG("Received data from BLE NUS. Writing data on UART.");
         NRF_LOG_HEXDUMP_DEBUG(p_evt->params.rx_data.p_data, p_evt->params.rx_data.length);
@@ -221,6 +222,11 @@ static void nus_data_handler(ble_nus_evt_t * p_evt)
         {
             while (app_uart_put('\n') == NRF_ERROR_BUSY);
         }
+
+        memcpy(data_buf, p_evt->params.rx_data.p_data, length);
+        data_buf[length] = 0;
+        mshield_lcd_clear(MBEDSHIELD_LCD_LINE_4);
+        mshield_lcd_print(data_buf, 0, MBEDSHIELD_LCD_LINE_4);  
     }
 
 }
@@ -369,12 +375,16 @@ static void ble_evt_handler(ble_evt_t const * p_ble_evt, void * p_context)
             m_conn_handle = p_ble_evt->evt.gap_evt.conn_handle;
             err_code = nrf_ble_qwr_conn_handle_assign(&m_qwr, m_conn_handle);
             APP_ERROR_CHECK(err_code);
+
+            mshield_lcd_print("BT Connected", 0, MBEDSHIELD_LCD_LINE_4); 
             break;
 
         case BLE_GAP_EVT_DISCONNECTED:
             NRF_LOG_INFO("Disconnected");
             // LED indication will be changed when advertising starts.
             m_conn_handle = BLE_CONN_HANDLE_INVALID;
+
+            mshield_lcd_print("BT disconnected", 0, MBEDSHIELD_LCD_LINE_4); 
             break;
 
         case BLE_GAP_EVT_PHY_UPDATE_REQUEST:
