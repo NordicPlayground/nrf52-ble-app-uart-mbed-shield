@@ -677,16 +677,16 @@ static void mbed_shield_timer_callback(void *p_context)
             sprintf(string, "Temp: %.1fC", temp);
             break;
         case 1:
-            sprintf(string, "Acc X:%i", (int)acc_data[MBEDSHIELD_AXIS_X]);
+            sprintf(string, "Acc X: %i", (int)acc_data[MBEDSHIELD_AXIS_X]);
             break;
         case 2:
-            sprintf(string, "Acc Y:%i", (int)acc_data[MBEDSHIELD_AXIS_Y]);
+            sprintf(string, "Acc Y: %i", (int)acc_data[MBEDSHIELD_AXIS_Y]);
             break;
         case 3:
-            sprintf(string, "Acc Z:%i", (int)acc_data[MBEDSHIELD_AXIS_Z]);
+            sprintf(string, "Acc Z: %i", (int)acc_data[MBEDSHIELD_AXIS_Z]);
             break;
         case 4:
-            sprintf(string, "Pot left:%.1f", pot1);
+            sprintf(string, "Pot left: %.1f", pot1);
             break;
         case 5:
             sprintf(string, "Set LED color");

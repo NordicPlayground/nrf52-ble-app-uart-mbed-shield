@@ -27,7 +27,7 @@
 #define MBEDSHIELD_PIN_SCL              27
 #define MBEDSHIELD_PIN_SDA              26
 
-#define LCD_PIN_A0	                    18
+#define LCD_PIN_A0	                18
 #define LCD_PIN_RESET	                24
 
 #define MBEDSHIELD_PIN_POT_LEFT         3
@@ -56,7 +56,7 @@
 #define MBEDSHIELD_PIN_SCL              27
 #define MBEDSHIELD_PIN_SDA              26
 
-#define LCD_PIN_A0	                    32+8
+#define LCD_PIN_A0	                32+8
 #define LCD_PIN_RESET	                32+14
 
 #define MBEDSHIELD_PIN_POT_LEFT         3
